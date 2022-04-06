@@ -1,5 +1,6 @@
 #pragma once
 
+typedef bool bit;
 typedef unsigned char byte;
 typedef unsigned short int word;
 

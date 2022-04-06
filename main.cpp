@@ -3,6 +3,7 @@
 #include "inc/cpu.hpp"
 #include "inc/ram.hpp"
 #include "inc/bus.hpp"
+#include "inc/loader.hpp"
 
 int main(void) 
 {
@@ -21,12 +22,7 @@ int main(void)
     cpu.Connect(bus, true);
     ram.Connect(bus, false);
 
-    ram.Insert(0x00);
-    ram.Insert(0x1);
-    ram.Insert(0x00);
-    ram.Insert(0x2);
-    ram.Insert(0x00);
-    ram.Insert(0x3);
+    load("/home/bryce/Projects/cppsim/test/prg1.o", ram);
 
     while(true) {
         cpu.Print();

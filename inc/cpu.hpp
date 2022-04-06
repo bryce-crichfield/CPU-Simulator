@@ -17,43 +17,63 @@ class CPU : public Device
         // Control Unit
         word prc;
         word mar;
-        word stp;
         byte cir;
         byte mdr;
+        // construction register a
         word cra;
+        // construction register b
         word crb;
+
+        // Flags
+        bit error;
 
         void(CPU::*am)();
         void(CPU::*op)();
 
         void PrcInc();
-        void StpInc();
-        void StpDec();
 
         void Fetch();
         void Decode();
         void Execute();
 
-        void Push();
-        void Pop();
-
+        // Immediate - load next byte in memory into register
         void IMM();
+        // Direct - next 2 bytes act as pointer, load byte from there
         void DIR();
+        // Indirect - next 2 bytes point to an address in memory which stores pointer
         void IND();
+        // Internal - Next byte is a target register either (0x00, 0x01, 0x02)
+        // Will take value at target register and place it on the MDR
+        void INT();
         void NOOP();
 
+        // Load From Memory Into Register 
         void LDA();
         void LDB();
         void LDC();
+        // Store From Register to Memory
         void STA();
         void STB();
         void STC();
+
+        // Basic Arithmetric
+        void ADDA();
+        void ADDB();
+        void ADDC();
+        void MULA();
+        void MULB();
+        void MULC();
+        void JMP();
+        void JCA();
+        void JCB();
+        void JCC();
 
     
     public:
         CPU(SysConfig& config) : sysconfig(&config) 
         { 
-            a = 0x0;
+            a = b = c = 0;
+            error = 0;
         }
         ~CPU() { }
         void Read();

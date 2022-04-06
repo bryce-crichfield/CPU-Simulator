@@ -1,0 +1,11 @@
+{
+    "files.associations": {
+        "*.rmd": "markdown",
+        "iosfwd": "cpp",
+        "iostream": "cpp",
+        "array": "cpp",
+        "string": "cpp",
+        "string_view": "cpp"
+    },
+    "python.formatting.provider": "black"
+}

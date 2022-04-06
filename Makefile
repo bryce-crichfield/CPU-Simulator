@@ -10,7 +10,7 @@ INCDIR = inc
 EXE = exe
 
 #Object Files
-OBJS = $(OBJDIR)/bus.o $(OBJDIR)/cpu.o $(OBJDIR)/ram.o $(OBJDIR)/main.o $(OBJDIR)/def.o
+OBJS = $(OBJDIR)/bus.o $(OBJDIR)/cpu.o $(OBJDIR)/ram.o $(OBJDIR)/main.o $(OBJDIR)/def.o $(OBJDIR)/loader.o
 
 ## [ Compile ] ##
 # Link C++ and CUDA compiled object files to target exe
