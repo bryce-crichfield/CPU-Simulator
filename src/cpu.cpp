@@ -53,61 +53,74 @@ void CPU::Fetch()
     cir = mdr;
 }
 
-void CPU::Decode()
+void ControlUnit::Decode()
 {
+    // Check the Addressing Mode
+    switch ((0b11 << 14) & cir)
+    {
+        case 0b00: am = &CPU::IMM; break;
+        case 0b01: am = &CPU::DIR; break;
+        case 0b10: am = &CPU::IND; break;
+    }
+    // Check the Operation Code
+    switch((0b1111 << 10) & cir)
+    {
+        case 0b0000: 
+    }
     switch (cir)
     {
+        case 
     // Load
-    case 0x00: am =  &CPU::IMM; op = &CPU::LDA; break;
-    case 0x01: am =  &CPU::IMM; op = &CPU::LDB; break;
-    case 0x02: am =  &CPU::IMM; op = &CPU::LDC; break;
-    case 0x03: am =  &CPU::DIR; op = &CPU::LDA; break;
-    case 0x04: am =  &CPU::DIR; op = &CPU::LDB; break;
-    case 0x05: am =  &CPU::DIR; op = &CPU::LDC; break;
-    case 0x06: am =  &CPU::IND; op = &CPU::LDA; break;
-    case 0x07: am =  &CPU::IND; op = &CPU::LDB; break;
-    case 0x08: am =  &CPU::IND; op = &CPU::LDC; break;
-    case 0x0A: am =  &CPU::INT; op = &CPU::LDA; break;
-    case 0x0B: am =  &CPU::INT; op = &CPU::LDB; break;
-    case 0x0C: am =  &CPU::INT; op = &CPU::LDC; break;
-    // Store
-    case 0x0D: am =  &CPU::DIR; op = &CPU::STA; break;
-    case 0x0E: am =  &CPU::DIR; op = &CPU::STB; break;
-    case 0x0F: am =  &CPU::DIR; op = &CPU::STC; break;
-    case 0x10: am =  &CPU::IND; op = &CPU::STA; break;
-    case 0x11: am =  &CPU::IND; op = &CPU::STB; break;
-    case 0x12: am =  &CPU::IND; op = &CPU::STC; break;
-    // Addition
-    case 0x13: am =  &CPU::IMM; op = &CPU::ADDA; break;
-    case 0x14: am =  &CPU::IMM; op = &CPU::ADDB; break;
-    case 0x15: am =  &CPU::IMM; op = &CPU::ADDC; break;
-    case 0x16: am =  &CPU::DIR; op = &CPU::ADDA; break;
-    case 0x17: am =  &CPU::DIR; op = &CPU::ADDB; break;
-    case 0x18: am =  &CPU::DIR; op = &CPU::ADDC; break;
-    case 0x1A: am =  &CPU::IND; op = &CPU::ADDA; break;
-    case 0x1B: am =  &CPU::IND; op = &CPU::ADDB; break;
-    case 0x1C: am =  &CPU::IND; op = &CPU::ADDC; break;
-    case 0x1D: am =  &CPU::INT; op = &CPU::ADDA; break;
-    case 0x1E: am =  &CPU::INT; op = &CPU::ADDB; break;
-    case 0x1F: am =  &CPU::INT; op = &CPU::ADDC; break;
-    // Multiplication
-    case 0x20: am =  &CPU::IMM; op = &CPU::MULA; break;
-    case 0x21: am =  &CPU::IMM; op = &CPU::MULB; break;
-    case 0x22: am =  &CPU::IMM; op = &CPU::MULC; break;
-    case 0x23: am =  &CPU::IMM; op = &CPU::MULA; break;
-    case 0x24: am =  &CPU::IMM; op = &CPU::MULB; break;
-    case 0x25: am =  &CPU::IMM; op = &CPU::MULC; break;
-    case 0x26: am =  &CPU::DIR; op = &CPU::MULA; break;
-    case 0x27: am =  &CPU::DIR; op = &CPU::MULB; break;
-    case 0x28: am =  &CPU::DIR; op = &CPU::MULC; break;
-    case 0x2A: am =  &CPU::IND; op = &CPU::MULA; break;
-    case 0x2B: am =  &CPU::IND; op = &CPU::MULB; break;
-    case 0x2C: am =  &CPU::IND; op = &CPU::MULC; break;
-    // Branch
-    case 0x2D: am =  &CPU::DIR; op = &CPU::JMP; break;
-    case 0x2E: am =  &CPU::DIR; op = &CPU::JCA; break;
-    case 0x2F: am =  &CPU::DIR; op = &CPU::JCB; break;
-    case 0x30: am =  &CPU::DIR; op = &CPU::JCC; break;
+    // case 0x00: am =  &CPU::IMM; op = &CPU::LDA; break;
+    // case 0x01: am =  &CPU::IMM; op = &CPU::LDB; break;
+    // case 0x02: am =  &CPU::IMM; op = &CPU::LDC; break;
+    // case 0x03: am =  &CPU::DIR; op = &CPU::LDA; break;
+    // case 0x04: am =  &CPU::DIR; op = &CPU::LDB; break;
+    // case 0x05: am =  &CPU::DIR; op = &CPU::LDC; break;
+    // case 0x06: am =  &CPU::IND; op = &CPU::LDA; break;
+    // case 0x07: am =  &CPU::IND; op = &CPU::LDB; break;
+    // case 0x08: am =  &CPU::IND; op = &CPU::LDC; break;
+    // case 0x0A: am =  &CPU::INT; op = &CPU::LDA; break;
+    // case 0x0B: am =  &CPU::INT; op = &CPU::LDB; break;
+    // case 0x0C: am =  &CPU::INT; op = &CPU::LDC; break;
+    // // Store
+    // case 0x0D: am =  &CPU::DIR; op = &CPU::STA; break;
+    // case 0x0E: am =  &CPU::DIR; op = &CPU::STB; break;
+    // case 0x0F: am =  &CPU::DIR; op = &CPU::STC; break;
+    // case 0x10: am =  &CPU::IND; op = &CPU::STA; break;
+    // case 0x11: am =  &CPU::IND; op = &CPU::STB; break;
+    // case 0x12: am =  &CPU::IND; op = &CPU::STC; break;
+    // // Addition
+    // case 0x13: am =  &CPU::IMM; op = &CPU::ADDA; break;
+    // case 0x14: am =  &CPU::IMM; op = &CPU::ADDB; break;
+    // case 0x15: am =  &CPU::IMM; op = &CPU::ADDC; break;
+    // case 0x16: am =  &CPU::DIR; op = &CPU::ADDA; break;
+    // case 0x17: am =  &CPU::DIR; op = &CPU::ADDB; break;
+    // case 0x18: am =  &CPU::DIR; op = &CPU::ADDC; break;
+    // case 0x1A: am =  &CPU::IND; op = &CPU::ADDA; break;
+    // case 0x1B: am =  &CPU::IND; op = &CPU::ADDB; break;
+    // case 0x1C: am =  &CPU::IND; op = &CPU::ADDC; break;
+    // case 0x1D: am =  &CPU::INT; op = &CPU::ADDA; break;
+    // case 0x1E: am =  &CPU::INT; op = &CPU::ADDB; break;
+    // case 0x1F: am =  &CPU::INT; op = &CPU::ADDC; break;
+    // // Multiplication
+    // case 0x20: am =  &CPU::IMM; op = &CPU::MULA; break;
+    // case 0x21: am =  &CPU::IMM; op = &CPU::MULB; break;
+    // case 0x22: am =  &CPU::IMM; op = &CPU::MULC; break;
+    // case 0x23: am =  &CPU::IMM; op = &CPU::MULA; break;
+    // case 0x24: am =  &CPU::IMM; op = &CPU::MULB; break;
+    // case 0x25: am =  &CPU::IMM; op = &CPU::MULC; break;
+    // case 0x26: am =  &CPU::DIR; op = &CPU::MULA; break;
+    // case 0x27: am =  &CPU::DIR; op = &CPU::MULB; break;
+    // case 0x28: am =  &CPU::DIR; op = &CPU::MULC; break;
+    // case 0x2A: am =  &CPU::IND; op = &CPU::MULA; break;
+    // case 0x2B: am =  &CPU::IND; op = &CPU::MULB; break;
+    // case 0x2C: am =  &CPU::IND; op = &CPU::MULC; break;
+    // // Branch
+    // case 0x2D: am =  &CPU::DIR; op = &CPU::JMP; break;
+    // case 0x2E: am =  &CPU::DIR; op = &CPU::JCA; break;
+    // case 0x2F: am =  &CPU::DIR; op = &CPU::JCB; break;
+    // case 0x30: am =  &CPU::DIR; op = &CPU::JCC; break;
 
     default: 
         std::cout << "Unknown Instruction" << std::endl;
@@ -134,7 +147,7 @@ void CPU::DIR()
     cra = mdr;
     IMM();
     crb = mdr;
-    mar = (cra << 8) | crb;
+    mar = (cra << 16) | crb;
     Read();
 }
 
@@ -144,7 +157,7 @@ void CPU::IND()
     cra = mdr;
     Read();
     crb = mdr;
-    mar = (cra << 8) | crb;
+    mar = (cra << 16) | crb;
     Read();
 }
 

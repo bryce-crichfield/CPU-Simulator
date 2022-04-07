@@ -32,17 +32,17 @@ class Bus
         void RaiseWriteFlag();
 
         word ReadAddressBus();
-        void WriteAddressBus(word addr);
+        void WriteAddressBus(sentence addr);
         
         byte ReadDataBus();
-        void WriteDataBus(byte data);
+        void WriteDataBus(word data);
 
     private:
         Device* cpu;
         Device* ram;
 
-        word address_bus;
-        byte data_bus;
+        sentence address_bus;
+        word data_bus;
 
         bool read_flag;
         bool write_flag;

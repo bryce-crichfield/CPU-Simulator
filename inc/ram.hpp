@@ -10,14 +10,14 @@ class RAM : public Device
 {
     private:
         SysConfig* sysconfig;
-        byte* data_array;
-        word current;
+        word* data_array;
+        sentence current;
 
     public:
         RAM(SysConfig& config) : sysconfig(&config) 
         { 
             current = config.PRG_START;
-            data_array = new byte[sysconfig->MEM_SIZE];
+            data_array = new word[sysconfig->MEM_SIZE];
         }
 
         ~RAM() 
@@ -29,7 +29,7 @@ class RAM : public Device
         void Write();
         void Reset();
 
-        void Insert(byte data) 
+        void Insert(word data) 
         {
             data_array[current] = data;
             current -= 1;

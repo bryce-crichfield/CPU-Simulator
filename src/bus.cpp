@@ -69,7 +69,7 @@ word Bus::ReadAddressBus()
     return address_bus;
 }
 
-void Bus::WriteAddressBus(word addr) 
+void Bus::WriteAddressBus(sentence addr) 
 {
     address_bus = addr;
 }
@@ -79,7 +79,7 @@ byte Bus::ReadDataBus()
     return data_bus;
 }
 
-void Bus::WriteDataBus(byte data)
+void Bus::WriteDataBus(word data)
 {
     data_bus = data;
 }
