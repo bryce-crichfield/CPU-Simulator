@@ -1,6 +1,6 @@
-#include "../inc/loader.hpp"
+#include "loader.hpp"
 
-#include "../inc/ram.hpp"
+#include "../ram/ram.hpp"
 #include <iostream>
 #include <fstream>
 #include <string>

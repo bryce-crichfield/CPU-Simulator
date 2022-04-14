@@ -6,7 +6,8 @@
         "array": "cpp",
         "string": "cpp",
         "string_view": "cpp",
-        "ostream": "cpp"
+        "ostream": "cpp",
+        "cstddef": "cpp"
     },
     "python.formatting.provider": "black"
 }

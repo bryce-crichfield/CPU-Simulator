@@ -74,7 +74,7 @@ public:
     // Todo: This seems to call the CU more than itself, maybe it should be moved?
     void Fetch();
 
-    // Read a 16-bit word from the bus by placing the address at the
+    // Read a 16-bit word from the bus by placing the address held at the
     // memory address register onto the memory address bus.  The bus itself
     // is expected to resolve any read-requests so long as the address
     // requested is well-formed.  Once the request is resolved, the resultant

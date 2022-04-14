@@ -64,7 +64,7 @@ void Bus::RaiseWriteFlag()
     write_flag = true;
 }
 
-word Bus::ReadAddressBus() 
+sentence Bus::ReadAddressBus() 
 {
     return address_bus;
 }
@@ -74,7 +74,7 @@ void Bus::WriteAddressBus(sentence addr)
     address_bus = addr;
 }
 
-byte Bus::ReadDataBus() 
+word Bus::ReadDataBus() 
 {
     return data_bus;
 }

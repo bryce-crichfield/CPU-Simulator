@@ -5,47 +5,53 @@
 class Device;
 class Bus;
 
-class Device 
+enum DeviceAddress 
 {
-    protected:
-        Bus* bus;
+    CPU_ADDRESS = 0b00,
+    RAM_ADDRESS = 0b01,
+};
 
-    public:
-        Device() {}
-        ~Device() {}
+class Device
+{
+protected:
+    Bus *bus;
 
-        virtual void Read() = 0;
-        virtual void Write() = 0; 
-        void Connect(Bus& bus, bool id);
-        void Reset();
-};    
+public:
+    Device() {}
+    ~Device() {}
+
+    virtual void Read() = 0;
+    virtual void Write() = 0;
+    void Connect(Bus &bus, bool id);
+    void Reset();
+};
 
 class Bus
 {
-    public:
-        Bus();
-        ~Bus();
+private:
+    Device *cpu;
+    Device *ram;
 
-        void Enroll(Device& device, bool id);
-        void Notify();
-        void RaiseReadFlag();
-        void RaiseWriteFlag();
+    sentence address_bus;
+    word data_bus;
 
-        word ReadAddressBus();
-        void WriteAddressBus(sentence addr);
-        
-        byte ReadDataBus();
-        void WriteDataBus(word data);
+    bool read_flag;
+    bool write_flag;
 
-    private:
-        Device* cpu;
-        Device* ram;
+public:
+    Bus();
+    ~Bus();
 
-        sentence address_bus;
-        word data_bus;
+    void Enroll(Device &device, bool id);
+    void Notify();
+    void RaiseReadFlag();
+    void RaiseWriteFlag();
 
-        bool read_flag;
-        bool write_flag;
+    sentence ReadAddressBus();
+    void WriteAddressBus(sentence addr);
+
+    word ReadDataBus();
+    void WriteDataBus(word data);
 };
 
 #endif

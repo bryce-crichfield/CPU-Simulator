@@ -1,31 +1,44 @@
 {
-	"compiler": "g++",
-	"compiler-args": [
-		"-Wextra",
-		"-std=c++17",
-		"-lm"
-	],
-	"compiler-libs": [],
-	"executable-name": "exe",
-	"ignores" : [],
-    "packages": [
+  "compiler": "g++",
+  "compiler-args": ["-Wextra", "-std=c++17", "-lm"],
+  "compiler-libs": [],
+  "executable-name": "exe",
+  "ignores": [],
+  "packages": [
+    {
+      "id": "bus",
+      "defs": [
         {
-            "id": "bus",
-            "defs":  [
-                {
-                    "id": "bus",
-                    "impls": ["bus"]
-                }
-            ]
-        },
-        {
-            "id": "cpu",
-            "defs":  [
-                {
-                    "id": "cpu",
-                    "impls": ["addressingunit", "controlunit", "arithmeticlogicunit"]
-                }
-            ]
+          "id": "bus",
+          "impls": ["bus"]
         }
-    ]
+      ]
+    },
+    {
+      "id": "cpu",
+      "defs": [
+        {
+          "id": "cpu",
+          "impls": [
+            "cpu",
+            "addressingunit",
+            "controlunit",
+            "arithmeticlogicunit"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "def",
+      "defs": [{ "id": "def", "impls": ["def"] }]
+    },
+    {
+      "id": "loader",
+      "defs": [{ "id": "loader", "impls": ["loader"] }]
+    },
+    {
+      "id": "ram",
+      "defs": [{ "id": "ram", "impls": ["ram"] }]
+    }
+  ]
 }
