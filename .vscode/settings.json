@@ -5,7 +5,8 @@
         "iostream": "cpp",
         "array": "cpp",
         "string": "cpp",
-        "string_view": "cpp"
+        "string_view": "cpp",
+        "ostream": "cpp"
     },
     "python.formatting.provider": "black"
 }

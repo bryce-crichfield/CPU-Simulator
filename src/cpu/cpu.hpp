@@ -1,6 +1,8 @@
 #ifndef CPU_H
 #define CPU_H
 
+#include <stdio.h>
+#include <iostream>
 #include "bus.hpp"
 
 enum AddressingMode
@@ -30,6 +32,8 @@ class ControlUnit;
 class AddressingUnit;
 class ArithmeticLogicUnit;
 
+// Abstract class for all components used by the cpu.  Gives each child unit of the
+// CPU a reference to the CPU itself
 class SubUnit
 {
 public:
@@ -40,24 +44,25 @@ public:
         : cpu(cpu)
     {
     }
+
+    virtual void Print() = 0;
 };
 
 // Responsible for writing and reading instructions and data to and from the bus
 class AddressingUnit : SubUnit
 {
 private:
-    // Construction Register - used as temporary buffer to construct a 32-bit 
+    // Construction Register - used as temporary buffer to construct a 32-bit
     // value from two 16-bit values.  This is done during a download of of two
-    // word of memory 
+    // word of memory
     word cra, crb;
 
 public:
-
     // Memory Address Register - stores the address of the current fetched address
     // used during read and writes as a global threshold between cpu and address bus
     sentence mar;
 
-    // Memory Data Register - stores 16-bit unencoded data items that have been 
+    // Memory Data Register - stores 16-bit unencoded data items that have been
     // fetched from memory and to be written to memory, acting as global theshold
     // between cpu and data bus
     word mdr;
@@ -66,6 +71,15 @@ public:
     {
         cra = crb = 0;
         mar = mdr = 0;
+    }
+
+    // Todo: This seems to call the CU more than itself, maybe it should be moved?
+    void Fetch()
+    {
+        mar = cpu.control_unit.prc;
+        cpu.control_unit.PrcInc();
+        Read();
+        cpu.control_unit.cir = mdr;
     }
 
     void Read()
@@ -110,12 +124,26 @@ public:
         mar = (cra << 16) | crb;
         Read();
     }
+
+    void Print() 
+    {
+        using namespace std;
+        cout << "----- Addressing Unit -----" << endl;
+        cout << "----- --- MAR = " << mar << endl;
+        cout << "----- --- MDR = " << mdr << endl;
+    }
 };
 
 // Responsible for decoding instructions retrieved rom the addressing unit
 class ControlUnit : SubUnit
 {
 private:
+    const word AddressingModeMask = 0b11 << 13;
+    const word OperationCodeMask = 0b1111 << 9;
+    const word DestinationRegisterMask = 0b111 << 6;
+    const word SourceRegister1Mask = 0b111 << 3;
+    const word SourceRegister2Mask = 0b111;
+
     // Decode the first 2-bits of the 16-bit control instruction
     // register, then store the decoded addressing mode in the address
     // mode register for execution during the decode phase
@@ -143,23 +171,23 @@ private:
     // decoded opcode in the operation code register
     void DecodeOperationCode()
     {
-        switch ((0b1111 << 10) & cir)
+        switch (OperationCodeMask & cir)
         {
-            case 0:
-                ocr = Noop;
-                break;
-            case 1:
-                ocr = Load;
-                break;
-            case 2: 
-                ocr = Store;
-                break;
-            case 3: 
-                ocr = Jump;
-                break;
-            case 15: 
-                ocr = Halt;
-                break;
+        case 0:
+            ocr = Noop;
+            break;
+        case 1:
+            ocr = Load;
+            break;
+        case 2:
+            ocr = Store;
+            break;
+        case 3:
+            ocr = Jump;
+            break;
+        case 15:
+            ocr = Halt;
+            break;
         }
     }
 
@@ -168,7 +196,7 @@ private:
     // the decoded internal address in the destination register
     void DecodeDestinationRegister()
     {
-        switch ((0b111 << 8) & cir)
+        switch (DestinationRegisterMask & cir)
         {
         case 1:
             destination_register = &cpu.arithmetic_logic_unit.r1;
@@ -196,7 +224,7 @@ private:
     // the decoded internal address in the first source register
     void DecodeSourceRegister1()
     {
-        switch ((0b111 << 5) & cir)
+        switch (SourceRegister1Mask & cir)
         {
         case 1:
             source_register_1 = &cpu.arithmetic_logic_unit.r1;
@@ -224,7 +252,7 @@ private:
     // the decoded internal address in the second source register
     void DecodeSourceRegister2()
     {
-        switch (0b111 & cir)
+        switch (SourceRegister2Mask & cir)
         {
         case 1:
             source_register_2 = &cpu.arithmetic_logic_unit.r1;
@@ -314,6 +342,14 @@ public:
         else
             prc += 1;
     }
+
+    void Print() 
+    {
+        using namespace std;
+        cout << "----- Control Unit -----" << endl;
+        cout << "----- --- PRC = " << prc << endl;
+        cout << "----- --- CIR = " << cir << endl;
+    }
 };
 
 struct Flags
@@ -341,6 +377,31 @@ public:
         r0 = r1 = r2 = r3 = r4 = r5 = r6 = 0;
     }
 
+    void Execute()
+    {
+        // Todo: this could be easily eliminated by storing an inter-
+        // class functinon pointer in instead of an enum that will have
+        // to be rechecked
+        switch (cpu.control_unit.ocr)
+        {
+        case OperationCode::Noop:
+            Noop();
+            break;
+        case OperationCode::Load:
+            Load();
+            break;
+        case OperationCode::Store:
+            Store();
+            break;
+        case OperationCode::Jump:
+            Jump();
+            break;
+        case OperationCode::Halt:
+            Halt();
+            break;
+        }
+    }
+
     void Noop()
     {
         return;
@@ -361,9 +422,22 @@ public:
         cpu.control_unit.prc = cpu.addressing_unit.mar;
     }
 
-    void Halt() 
+    void Halt()
     {
         cpu.flags.halt = true;
+    }
+
+    void Print() 
+    {
+        using namespace std;
+        cout << "----- Arithmetic Logic Unit -----" << endl;;
+        cout << "----- --- R0 = " << r1 << endl;
+        cout << "----- --- R1 = " << r2 << endl;
+        cout << "----- --- R2 = " << r2 << endl;
+        cout << "----- --- R3 = " << r3 << endl;
+        cout << "----- --- R4 = " << r4 << endl;
+        cout << "----- --- R5 = " << r5 << endl;
+        cout << "----- --- R6 = " << r6 << endl;
     }
 };
 
@@ -381,12 +455,6 @@ private:
     // Flags
     Flags &flags;
 
-    void PrcInc();
-
-    void Fetch();
-    void Decode();
-    void Execute();
-
 public:
     CPU()
         : addressing_unit(*(new AddressingUnit(*this))),
@@ -399,8 +467,29 @@ public:
     ~CPU() {}
 
     void Reset();
-    void Cycle();
-    void Print();
+
+    void Cycle()
+    {
+        while (flags.halt == false)
+        {
+            addressing_unit.Fetch();
+            control_unit.Decode();
+            arithmetic_logic_unit.Execute();
+            if (flags.error)
+            {
+                printf("Error Flag Raised\nHalting CPU\n");
+                flags.halt = true;
+            }
+        }
+    }
+    void Print()
+    {
+        using namespace std;
+        cout << "CPU Report -----" << endl;
+        addressing_unit.Print();
+        control_unit.Print();
+        arithmetic_logic_unit.Print();
+    }
 };
 
 #endif

@@ -1,0 +1,31 @@
+{
+	"compiler": "g++",
+	"compiler-args": [
+		"-Wextra",
+		"-std=c++17",
+		"-lm"
+	],
+	"compiler-libs": [],
+	"executable-name": "exe",
+	"ignores" : [],
+    "packages": [
+        {
+            "id": "bus",
+            "defs":  [
+                {
+                    "id": "bus",
+                    "impls": ["bus"]
+                }
+            ]
+        },
+        {
+            "id": "cpu",
+            "defs":  [
+                {
+                    "id": "cpu",
+                    "impls": ["bus"]
+                }
+            ]
+        }
+    ]
+}
