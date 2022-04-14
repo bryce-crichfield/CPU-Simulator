@@ -67,71 +67,37 @@ public:
     // between cpu and data bus
     word mdr;
 
-    AddressingUnit(CPU &cpu) : SubUnit(cpu)
-    {
-        cra = crb = 0;
-        mar = mdr = 0;
-    }
+    // Given a reference to the owning CPU of this addressing unit, set the
+    // internal registers of this unit to zeros
+    AddressingUnit(CPU &cpu);
 
     // Todo: This seems to call the CU more than itself, maybe it should be moved?
-    void Fetch()
-    {
-        mar = cpu.control_unit.prc;
-        cpu.control_unit.PrcInc();
-        Read();
-        cpu.control_unit.cir = mdr;
-    }
+    void Fetch();
 
-    void Read()
-    {
-        cpu.bus->RaiseReadFlag();
-        cpu.bus->WriteAddressBus(mar);
-        cpu.bus->Notify();
-        mdr = cpu.bus->ReadDataBus();
-    }
+    // Read a 16-bit word from the bus by placing the address at the
+    // memory address register onto the memory address bus.  The bus itself
+    // is expected to resolve any read-requests so long as the address
+    // requested is well-formed.  Once the request is resolved, the resultant
+    // value is placed on the data bus and then stored in the memory data register
+    void Read();
 
-    void Write()
-    {
-        cpu.bus->RaiseWriteFlag();
-        cpu.bus->WriteAddressBus(mar);
-        cpu.bus->WriteDataBus(mar);
-        cpu.bus->Notify();
-    }
+    // Store the 16-bit word held in the memory data register at the 32-bit
+    // address held in the memory address register.  The two values are handed off
+    // onto the data bus and address bus respectively, and it is left up to the bus
+    // to resolve the write to memory correctly.
+    void Write();
 
-    void Immediate()
-    {
-        mar = cpu.control_unit.prc;
-        cpu.control_unit.PrcInc();
-        Read();
-    }
+    // The 32-bit address stored in the program counter is expected to contain
+    // the next 16-bit data word.  The program counter's address is placed into
+    // the memory address register, the counter rhen incremented.  A bus-read
+    // operation is then performed accordingly
+    void Immediate();
 
-    void Direct()
-    {
-        Immediate();
-        cra = mdr;
-        Immediate();
-        crb = mdr;
-        mar = (cra << 16) | crb;
-        Read();
-    }
+    void Direct();
 
-    void Indirect()
-    {
-        Direct();
-        cra = mdr;
-        Read();
-        crb = mdr;
-        mar = (cra << 16) | crb;
-        Read();
-    }
+    void Indirect();
 
-    void Print() 
-    {
-        using namespace std;
-        cout << "----- Addressing Unit -----" << endl;
-        cout << "----- --- MAR = " << mar << endl;
-        cout << "----- --- MDR = " << mdr << endl;
-    }
+    void Print();
 };
 
 // Responsible for decoding instructions retrieved rom the addressing unit
@@ -147,133 +113,27 @@ private:
     // Decode the first 2-bits of the 16-bit control instruction
     // register, then store the decoded addressing mode in the address
     // mode register for execution during the decode phase
-    void DecodeAddressingMode()
-    {
-        switch ((0b11 << 14) & cir)
-        {
-        case 0:
-            amr = Immediate;
-            break;
-        case 1:
-            amr = Direct;
-            break;
-        case 2:
-            amr = Indirect;
-            break;
-        case 3:
-            amr = Internal;
-            break;
-        }
-    }
+    void DecodeAddressingMode();
 
     // Decode the 4-bit operation code stored in the encoded
     // 16-bit control instruction register, then store the
     // decoded opcode in the operation code register
-    void DecodeOperationCode()
-    {
-        switch (OperationCodeMask & cir)
-        {
-        case 0:
-            ocr = Noop;
-            break;
-        case 1:
-            ocr = Load;
-            break;
-        case 2:
-            ocr = Store;
-            break;
-        case 3:
-            ocr = Jump;
-            break;
-        case 15:
-            ocr = Halt;
-            break;
-        }
-    }
+    void DecodeOperationCode();
 
     // If the current addressing mode is the Internal Mode,
     // decode 3-bits as the destination register, and store
     // the decoded internal address in the destination register
-    void DecodeDestinationRegister()
-    {
-        switch (DestinationRegisterMask & cir)
-        {
-        case 1:
-            destination_register = &cpu.arithmetic_logic_unit.r1;
-            break;
-        case 2:
-            destination_register = &cpu.arithmetic_logic_unit.r2;
-            break;
-        case 3:
-            destination_register = &cpu.arithmetic_logic_unit.r3;
-            break;
-        case 4:
-            destination_register = &cpu.arithmetic_logic_unit.r4;
-            break;
-        case 5:
-            destination_register = &cpu.arithmetic_logic_unit.r5;
-            break;
-        case 6:
-            destination_register = &cpu.arithmetic_logic_unit.r6;
-            break;
-        }
-    }
+    void DecodeDestinationRegister();
 
     // If the current addressing mode is the Internal Mode,
     // decode 3-bits as the first source register, and store
     // the decoded internal address in the first source register
-    void DecodeSourceRegister1()
-    {
-        switch (SourceRegister1Mask & cir)
-        {
-        case 1:
-            source_register_1 = &cpu.arithmetic_logic_unit.r1;
-            break;
-        case 2:
-            source_register_1 = &cpu.arithmetic_logic_unit.r2;
-            break;
-        case 3:
-            source_register_1 = &cpu.arithmetic_logic_unit.r3;
-            break;
-        case 4:
-            source_register_1 = &cpu.arithmetic_logic_unit.r4;
-            break;
-        case 5:
-            source_register_1 = &cpu.arithmetic_logic_unit.r5;
-            break;
-        case 6:
-            source_register_1 = &cpu.arithmetic_logic_unit.r6;
-            break;
-        }
-    }
+    void DecodeSourceRegister1();
 
     // If the current addressing mode is the Internal Mode,
     // decode 3-bits as the second source register, and store
     // the decoded internal address in the second source register
-    void DecodeSourceRegister2()
-    {
-        switch (SourceRegister2Mask & cir)
-        {
-        case 1:
-            source_register_2 = &cpu.arithmetic_logic_unit.r1;
-            break;
-        case 2:
-            source_register_2 = &cpu.arithmetic_logic_unit.r2;
-            break;
-        case 3:
-            source_register_2 = &cpu.arithmetic_logic_unit.r3;
-            break;
-        case 4:
-            source_register_2 = &cpu.arithmetic_logic_unit.r4;
-            break;
-        case 5:
-            source_register_2 = &cpu.arithmetic_logic_unit.r5;
-            break;
-        case 6:
-            source_register_2 = &cpu.arithmetic_logic_unit.r6;
-            break;
-        }
-    }
+    void DecodeSourceRegister2();
 
 public:
     // Program Counter - the 32-bit address of the current 16-bit instruction
@@ -292,64 +152,23 @@ public:
     // the current instruction by destination and by source
     word *destination_register, *source_register_1, *source_register_2;
 
-    ControlUnit(CPU &cpu) : SubUnit(cpu)
-    {
-        prc = 0x0;
-        cir = 0x0;
-        amr = Immediate;
-        destination_register = &cpu.arithmetic_logic_unit.r1;
-        source_register_1 = &cpu.arithmetic_logic_unit.r2;
-        source_register_2 = &cpu.arithmetic_logic_unit.r3;
-    }
+    // Given a reference to the owning CPU of this control unit, set the program
+    // counter, control instruction register, and addressing mode register to
+    // defaults of zero and immediate mode as applicable.
+    // Set destination and source register to the first register.
+    ControlUnit(CPU &cpu);
 
-    /* ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ Decode ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ */
     // After having contacted the addressing unit, this stores the memory data
     // register into the control instruction register, decodes the instruction
     // therein and dispatches the requisite addressing mode to the addressing
     // unit, preparing the registers for execution.
-    void Decode()
-    {
-        cir = cpu.addressing_unit.mdr;
-        DecodeAddressingMode();
-        DecodeOperationCode();
-        switch (amr)
-        {
-        case Immediate:
-            cpu.addressing_unit.Immediate();
-            break;
-        case Direct:
-            cpu.addressing_unit.Direct();
-            break;
-        case Indirect:
-            cpu.addressing_unit.Indirect();
-            break;
-        case Internal:
-            DecodeDestinationRegister();
-            DecodeSourceRegister1();
-            DecodeSourceRegister2();
-            break;
-        default:
-            break;
-        }
-    }
+    void Decode();
 
     // Program Counter Increment - increment the program counter,
     // if this were to result in overflow then set the error bit.
-    void PrcInc()
-    {
-        if (prc + 1 > 0xffffffff)
-            cpu.flags.error = true;
-        else
-            prc += 1;
-    }
+    void PrcInc();
 
-    void Print() 
-    {
-        using namespace std;
-        cout << "----- Control Unit -----" << endl;
-        cout << "----- --- PRC = " << prc << endl;
-        cout << "----- --- CIR = " << cir << endl;
-    }
+    void Print();
 };
 
 struct Flags
@@ -372,73 +191,21 @@ public:
     // Register 0 always contains 0
     word r0, r1, r2, r3, r4, r5, r6;
 
-    ArithmeticLogicUnit(CPU &cpu) : SubUnit(cpu)
-    {
-        r0 = r1 = r2 = r3 = r4 = r5 = r6 = 0;
-    }
+    ArithmeticLogicUnit(CPU &cpu);
 
-    void Execute()
-    {
-        // Todo: this could be easily eliminated by storing an inter-
-        // class functinon pointer in instead of an enum that will have
-        // to be rechecked
-        switch (cpu.control_unit.ocr)
-        {
-        case OperationCode::Noop:
-            Noop();
-            break;
-        case OperationCode::Load:
-            Load();
-            break;
-        case OperationCode::Store:
-            Store();
-            break;
-        case OperationCode::Jump:
-            Jump();
-            break;
-        case OperationCode::Halt:
-            Halt();
-            break;
-        }
-    }
+    void Execute();
 
-    void Noop()
-    {
-        return;
-    }
+    void Noop();
 
-    void Load()
-    {
-        *cpu.control_unit.destination_register = cpu.addressing_unit.mdr;
-    }
+    void Load();
 
-    void Store()
-    {
-        cpu.addressing_unit.mdr = *cpu.control_unit.destination_register;
-    }
+    void Store();
 
-    void Jump()
-    {
-        cpu.control_unit.prc = cpu.addressing_unit.mar;
-    }
+    void Jump();
 
-    void Halt()
-    {
-        cpu.flags.halt = true;
-    }
+    void Halt();
 
-    void Print() 
-    {
-        using namespace std;
-        cout << "----- Arithmetic Logic Unit -----" << endl;;
-        cout << "----- --- R0 = " << r1 << endl;
-        cout << "----- --- R1 = " << r2 << endl;
-        cout << "----- --- R2 = " << r2 << endl;
-        cout << "----- --- R3 = " << r3 << endl;
-        cout << "----- --- R4 = " << r4 << endl;
-        cout << "----- --- R5 = " << r5 << endl;
-        cout << "----- --- R6 = " << r6 << endl;
-    }
+    void Print();
 };
 
 class CPU : public Device
@@ -456,40 +223,15 @@ private:
     Flags &flags;
 
 public:
-    CPU()
-        : addressing_unit(*(new AddressingUnit(*this))),
-          control_unit(*(new ControlUnit(*this))),
-          arithmetic_logic_unit(*(new ArithmeticLogicUnit(*this))),
-          flags(*(new Flags()))
-    {
-    }
+    CPU();
 
     ~CPU() {}
 
     void Reset();
 
-    void Cycle()
-    {
-        while (flags.halt == false)
-        {
-            addressing_unit.Fetch();
-            control_unit.Decode();
-            arithmetic_logic_unit.Execute();
-            if (flags.error)
-            {
-                printf("Error Flag Raised\nHalting CPU\n");
-                flags.halt = true;
-            }
-        }
-    }
-    void Print()
-    {
-        using namespace std;
-        cout << "CPU Report -----" << endl;
-        addressing_unit.Print();
-        control_unit.Print();
-        arithmetic_logic_unit.Print();
-    }
+    void Cycle();
+
+    void Print();
 };
 
 #endif

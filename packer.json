@@ -23,7 +23,7 @@
             "defs":  [
                 {
                     "id": "cpu",
-                    "impls": ["bus"]
+                    "impls": ["addressingunit", "controlunit", "arithmeticlogicunit"]
                 }
             ]
         }
