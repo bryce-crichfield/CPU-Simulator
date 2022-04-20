@@ -1,6 +1,16 @@
 #include <stdio.h>
-#include "../inc/ram.hpp"
-#include  "../inc/def.hpp"
+#include "ram.hpp"
+#include  "../def/def.hpp"
+
+RAM::RAM(sentence size)
+{ 
+    data_array = new word[size];
+}
+
+RAM::~RAM()
+{
+    delete(data_array);
+}
 
 void RAM::Read()
 {
@@ -19,5 +29,11 @@ void RAM::Write()
 void RAM::Reset()
 {
 
+}
+
+void RAM::Insert(word data)
+{
+    data_array[current_insert] = data;
+    current_insert -= 1;
 }
 

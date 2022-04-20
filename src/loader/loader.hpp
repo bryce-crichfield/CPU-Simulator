@@ -1,6 +1,6 @@
 #pragma once
 
-#include "ram.hpp"
+#include "../ram/ram.hpp"
 #include <iostream>
 #include <fstream>
 #include <string>

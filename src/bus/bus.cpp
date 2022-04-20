@@ -1,6 +1,6 @@
-#include "../inc/bus.hpp"
-#include "../inc/cpu.hpp"
-#include "../inc/ram.hpp"
+#include "bus.hpp"
+#include "../cpu/cpu.hpp"
+#include "../ram/ram.hpp"
 #include <iostream>
 #include <typeinfo>
 

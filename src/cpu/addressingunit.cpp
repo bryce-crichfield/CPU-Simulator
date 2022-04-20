@@ -1,4 +1,5 @@
 #include "cpu.hpp"
+#include "../bus/bus.hpp"
 
 AddressingUnit::AddressingUnit(CPU &cpu) : SubUnit(cpu)
 {

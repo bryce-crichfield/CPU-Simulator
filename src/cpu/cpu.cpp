@@ -1,19 +1,32 @@
 #include "cpu.hpp"
 
 CPU::CPU()
-    : addressing_unit(*(new AddressingUnit(*this))),
-      control_unit(*(new ControlUnit(*this))),
-      arithmetic_logic_unit(*(new ArithmeticLogicUnit(*this))),
-      flags(*(new Flags()))
+    : 
+    addressing_unit(*(new AddressingUnit(*this))),
+    control_unit(*(new ControlUnit(*this))),
+    arithmetic_logic_unit(*(new ArithmeticLogicUnit(*this))),
+    flags(*(new Flags()))
 {
+    return;
 }
 
 CPU::~CPU()
 {
 }
 
+void CPU::Read()
+{
+    addressing_unit.Read();
+}
+
+void CPU::Write()
+{
+    addressing_unit.Write();
+}
+
 void CPU::Reset()
 {
+    return;
 }
 
 void CPU::Cycle()

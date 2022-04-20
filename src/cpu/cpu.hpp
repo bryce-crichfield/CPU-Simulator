@@ -3,7 +3,7 @@
 
 #include <stdio.h>
 #include <iostream>
-#include "bus.hpp"
+#include "../bus/bus.hpp"
 
 enum AddressingMode
 {
@@ -97,7 +97,7 @@ public:
 
     void Indirect();
 
-    void Print();
+    void Print() override;
 };
 
 // Responsible for decoding instructions retrieved rom the addressing unit
@@ -168,7 +168,7 @@ public:
     // if this were to result in overflow then set the error bit.
     void PrcInc();
 
-    void Print();
+    void Print() override;
 };
 
 struct Flags
@@ -205,7 +205,7 @@ public:
 
     void Halt();
 
-    void Print();
+    void Print() override;
 };
 
 class CPU : public Device
@@ -225,9 +225,15 @@ private:
 public:
     CPU();
 
-    ~CPU() {}
+    // I don't know why, but there has to be a destructor and it has to be virtual
+    // otherwise you get the most obnoxius linking error
+    virtual ~CPU();
 
-    void Reset();
+    void Read() override;
+
+    void Write() override;
+
+    void Reset() override;
 
     void Cycle();
 

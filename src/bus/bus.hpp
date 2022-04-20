@@ -1,7 +1,8 @@
 #ifndef BUS_H
 #define BUS_H
 
-#include "def.hpp"
+#include "../def/def.hpp"
+
 class Device;
 class Bus;
 
@@ -17,13 +18,13 @@ protected:
     Bus *bus;
 
 public:
-    Device() {}
-    ~Device() {}
+    // Device() {}
+//    ~Device() = 0;
 
-    virtual void Read() = 0;
+    virtual void Read()  = 0;
     virtual void Write() = 0;
+    virtual void Reset() {};
     void Connect(Bus &bus, bool id);
-    void Reset();
 };
 
 class Bus

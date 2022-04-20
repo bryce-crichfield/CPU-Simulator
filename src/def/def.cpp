@@ -1,5 +1,1 @@
-#include "../inc/def.hpp"
-
-SysConfig::SysConfig() {
-    
-}
+#include "def.hpp"
