@@ -3,3 +3,4 @@ obj
 exe
 Makefile
 test
+assembler/__pycache__
