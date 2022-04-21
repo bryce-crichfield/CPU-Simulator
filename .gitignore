@@ -2,4 +2,4 @@ obj
 .vscode
 exe
 Makefile
-packer.json
+test
