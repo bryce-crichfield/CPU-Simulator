@@ -4,3 +4,4 @@ exe
 Makefile
 test
 assembler/__pycache__
+assembler/frontend/__pycache__

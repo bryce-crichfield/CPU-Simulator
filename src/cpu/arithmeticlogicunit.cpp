@@ -1,4 +1,5 @@
 #include "cpu.hpp"
+#include <stdio.h>
 
 ArithmeticLogicUnit::ArithmeticLogicUnit(CPU &cpu) : SubUnit(cpu)
 {
@@ -43,6 +44,9 @@ void ArithmeticLogicUnit::Load()
 void ArithmeticLogicUnit::Store()
 {
     cpu.addressing_unit.mdr = *cpu.control_unit.destination_register;
+    // Force Write Out Here?
+    cpu.Write();
+    // But what if we do
 }
 
 void ArithmeticLogicUnit::Jump()
@@ -59,7 +63,6 @@ void ArithmeticLogicUnit::Print()
 {
     using namespace std;
     cout << "----- Arithmetic Logic Unit -----" << endl;
-    ;
     cout << "----- --- R0 = " << r1 << endl;
     cout << "----- --- R1 = " << r2 << endl;
     cout << "----- --- R2 = " << r2 << endl;

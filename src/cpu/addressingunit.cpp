@@ -58,10 +58,11 @@ void AddressingUnit::Indirect()
     Read();
 }
 
+
 void AddressingUnit::Print()
 {
     using namespace std;
     cout << "----- Addressing Unit -----" << endl;
-    cout << "----- --- MAR = " << mar << endl;
-    cout << "----- --- MDR = " << mdr << endl;
+    cout << "----- --- MAR = 0x" << hex << mar << endl;
+    cout << "----- --- MDR = 0x" << hex << mdr << endl;
 }

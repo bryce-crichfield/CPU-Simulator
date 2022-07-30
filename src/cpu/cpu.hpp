@@ -3,6 +3,7 @@
 
 #include <stdio.h>
 #include <iostream>
+#include <string>
 #include "../bus/bus.hpp"
 
 enum AddressingMode
@@ -10,7 +11,8 @@ enum AddressingMode
     Immediate,
     Direct,
     Indirect,
-    Internal
+    SingleInternal,
+    DualInternal
 };
 
 enum OperationCode
@@ -24,6 +26,10 @@ enum OperationCode
     Multiply,
     Halt,
 };
+
+std::string PrintAddressingMode(AddressingMode mode);
+
+std::string PrintOperationCode(OperationCode code);
 
 class CPU;
 struct Flags;
@@ -104,8 +110,8 @@ public:
 class ControlUnit : SubUnit
 {
 private:
-    const word AddressingModeMask = 0b11 << 13;
-    const word OperationCodeMask = 0b1111 << 9;
+    const word AddressingModeMask = 0b111 << 13;
+    const word OperationCodeMask = 0b1111 << 8;
     const word DestinationRegisterMask = 0b111 << 6;
     const word SourceRegister1Mask = 0b111 << 3;
     const word SourceRegister2Mask = 0b111;
@@ -162,6 +168,8 @@ public:
     // register into the control instruction register, decodes the instruction
     // therein and dispatches the requisite addressing mode to the addressing
     // unit, preparing the registers for execution.
+    // The Decode process begins by determining the addressing mode, then from
+    // there determining the necessary sequence of decode operations needed.
     void Decode();
 
     // Program Counter Increment - increment the program counter,
@@ -197,8 +205,10 @@ public:
 
     void Noop();
 
+    // Used for registered writes 
     void Load();
 
+    // Only for addressed writes, not for registered writes
     void Store();
 
     void Jump();
@@ -219,10 +229,12 @@ private:
     ControlUnit &control_unit;
     ArithmeticLogicUnit &arithmetic_logic_unit;
 
+    
+
+public:
     // Flags
     Flags &flags;
 
-public:
     CPU();
 
     // I don't know why, but there has to be a destructor and it has to be virtual

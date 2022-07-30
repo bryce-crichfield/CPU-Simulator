@@ -4,7 +4,7 @@
 
 void ControlUnit::DecodeAddressingMode()
 {
-    switch ((0b11 << 14) & cir)
+    switch (AddressingModeMask & cir)
     {
     case 0:
         amr = Immediate;
@@ -15,14 +15,18 @@ void ControlUnit::DecodeAddressingMode()
     case 2:
         amr = Indirect;
         break;
-    case 3:
-        amr = Internal;
-        break;
+    // case 3:
+    //     amr = Internal;
+    //     break;
     }
 }
 
+
+// This ideally would store a function pointer in the ocr, but as of now
+// this is largely redundant
 void ControlUnit::DecodeOperationCode()
 {
+    std::cout << "Decoding Opcode" << std::endl;
     switch (OperationCodeMask & cir)
     {
     case 0:
@@ -32,6 +36,9 @@ void ControlUnit::DecodeOperationCode()
         ocr = Load;
         break;
     case 2:
+        // Prime the MAR with the address 
+        // This will invalidate the MDR, but Store will overwrite that anyways
+        cpu.addressing_unit.Direct();   
         ocr = Store;
         break;
     case 3:
@@ -39,6 +46,9 @@ void ControlUnit::DecodeOperationCode()
         break;
     case 15:
         ocr = Halt;
+        break;
+    default:
+        std::cout << "Opcode Decoding Error" << std::endl;
         break;
     }
 }
@@ -137,19 +147,31 @@ void ControlUnit::Decode()
     switch (amr)
     {
     case Immediate:
+        DecodeDestinationRegister();
         cpu.addressing_unit.Immediate();
         break;
     case Direct:
+        DecodeDestinationRegister();
         cpu.addressing_unit.Direct();
         break;
     case Indirect:
+        DecodeDestinationRegister();
         cpu.addressing_unit.Indirect();
         break;
-    case Internal:
+    case SingleInternal:
+        DecodeDestinationRegister();
+        DecodeSourceRegister1();
+        break;
+    case DualInternal:
         DecodeDestinationRegister();
         DecodeSourceRegister1();
         DecodeSourceRegister2();
         break;
+    // case Internal:
+    //     DecodeDestinationRegister();
+    //     DecodeSourceRegister1();
+    //     DecodeSourceRegister2();
+    //     break; THis oesn't make
     default:
         break;
     }
@@ -167,6 +189,8 @@ void ControlUnit::Print()
 {
     using namespace std;
     cout << "----- Control Unit -----" << endl;
-    cout << "----- --- PRC = " << prc << endl;
-    cout << "----- --- CIR = " << cir << endl;
+    cout << "----- --- PRC = 0x" << hex << prc << endl;
+    cout << "----- --- CIR = 0x" << hex << cir << endl;
+    cout << "----- --- AMR = " << PrintAddressingMode(amr) << endl;
+    cout << "----- --- OCR = " << PrintOperationCode(ocr) << endl;
 }

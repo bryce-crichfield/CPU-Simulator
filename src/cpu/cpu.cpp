@@ -1,4 +1,66 @@
 #include "cpu.hpp"
+#include <string>
+
+std::string PrintAddressingMode(AddressingMode mode)
+{
+    switch (mode)
+    {
+        case Immediate:
+            return "Immediate";
+            break;
+        case Direct:
+            return "Direct";
+            break;
+        case Indirect:
+            return "Indirect";
+            break;
+        case SingleInternal:
+            return "SingleInternal";
+            break;
+        case DualInternal:
+            return "DualInternal";
+            break;
+        default:
+            return "Unrecognized";
+            break;
+    }
+    return "Print Error";
+}
+
+std::string PrintOperationCode(OperationCode code)
+{
+    switch (code)
+    {
+        case Noop:
+            return "Noop";
+            break;
+        case Load:
+            return "Load";
+            break;
+        case Store:
+            return "Store";
+            break;
+        case Jump:
+            return "Jump";
+            break;
+        case Add:
+            return "Add";
+            break;
+        case Sub:
+            return "Sub";
+            break;
+        case Multiply:
+            return "Multiply";
+            break;
+        case Halt:
+            return "Halt";
+            break;
+        default:
+            return "Unrecognized";
+            break;
+    }
+    return "Print Error";
+}
 
 CPU::CPU()
     : 
@@ -31,8 +93,8 @@ void CPU::Reset()
 
 void CPU::Cycle()
 {
-    while (flags.halt == false)
-    {
+    // while (flags.halt == false)
+    // {
         addressing_unit.Fetch();
         control_unit.Decode();
         arithmetic_logic_unit.Execute();
@@ -41,7 +103,7 @@ void CPU::Cycle()
             printf("Error Flag Raised\nHalting CPU\n");
             flags.halt = true;
         }
-    }
+    // }
 }
 
 void CPU::Print()

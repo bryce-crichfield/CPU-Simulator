@@ -5,6 +5,7 @@
 RAM::RAM(sentence size)
 { 
     data_array = new word[size];
+    current_insert = 0;
 }
 
 RAM::~RAM()
@@ -34,6 +35,6 @@ void RAM::Reset()
 void RAM::Insert(word data)
 {
     data_array[current_insert] = data;
-    current_insert -= 1;
+    current_insert += 1;
 }
 
